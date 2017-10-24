@@ -1,6 +1,6 @@
 #include<Wire.h>
 #include<LiquidCrystal_I2C.h>
-
+//el 24 de octubre de 2017 subi la primera parte pero llevo avanzando lentamente con el programa desde fines de agosto
 bool dale(bool casco1,bool puesto1/*sentado1*//*,bool sentado2*/){
   if(!casco1 or !puesto1 /*or sentado1 *//*or sentado2*/ ){
     return false;
