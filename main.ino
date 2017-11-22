@@ -1,133 +1,194 @@
 #include<Wire.h>
 #include<LiquidCrystal_I2C.h>
-//el 24 de octubre de 2017 subi la primera parte pero llevo avanzando lentamente con el programa desde fines de agosto
+struct duo(){
+  int pinOn,pinPuesto,contador,pinSentado;
+  bool On,puesto,sentado;
+}uno,dos;
+struct  bandera
+{
+  int counteron,countersentado,counterpuesto,countertodo;
+  bool On,sentado,puesto,todo;
+}flag1,flag2;
+struct alcohol{
+  int counter,relay,soplo,aire;
+  bool flag,no;
+}sensor;
 
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+int globo = 8, asientoat = 10, ledverde = 6 , xd2 , relaygral = 12;
+bool a = false, b = false, a2 = false, b2 = false, alcol=false;
 
-LiquidCrystal_I2C lcd(0x27,16,2);
-int timerposta=0;
-bool a=false,b=false,a2=false,b2=false;//variables de lectura de los cascos
-bool repeON1, repeblue1=false,repeON2=false,repeblue2=false;//booleanos para guardas los estados;
-short int globo=8;//el globo xd
-short int ledazul2=7 , ledON2=3;//pines del segundo casco
-short int ledON=4 , ledazul=5 , ledverde=6 , xd2;//pines del primer casco y una variable para hacer calculos
-short int relayAlco=13 , relaygral=12;//los dos reles
+uno.pinOn=4;
+uno.pinPuesto=5;
+uno.asiento=9;
+alcohol.relay=13
+dos.pinOn=3;
+dos.pinPuesto=7
 
 void setup() {
-timerposta;
-Serial.begin(9600);
-Wire.begin();
-lcd.begin();
-lcd.clear();
-// put your setup code here, to run once:
-pinMode(ledON2,INPUT_PULLUP);
-pinMode(ledazul2,INPUT_PULLUP);
-pinMode(ledON,INPUT_PULLUP);
-pinMode(ledazul,INPUT_PULLUP);
-pinMode(ledverde,INPUT_PULLUP);
-pinMode(globo,INPUT_PULLUP);
-pinMode(A0,INPUT);
-pinMode(relayAlco,OUTPUT);
-digitalWrite(relayAlco,LOW);
-pinMode(relaygral,OUTPUT);
+  Serial.begin(9600);
+  Wire.begin();
+  lcd.begin();
+  lcd.clear();
+  pinMode(ledON2, INPUT_PULLUP);
+  pinMode(ledazul2, INPUT_PULLUP);
+  pinMode(uno.pinOn, INPUT_PULLUP);
+  pinMode(uno.pinPuesto, INPUT_PULLUP);
+  pinMode(ledverde, INPUT_PULLUP);
+  pinMode(globo, INPUT_PULLUP);
+  pinMode(A0, INPUT_PULLUP);
+  pinMode(alcohol.relay, OUTPUT);
+  digitalWrite(alcohol.relay, LOW);
+  pinMode(relaygral, OUTPUT);
+  digitalWrite(relaygral, HIGH);
+  pinMode(uno.asiento, INPUT_PULLUP);
+  pinMode(asientoat, INPUT_PULLUP);
 }
 
-void loop() {
-  timerposta++;
-    digitalWrite(relayAlco,HIGH);
-  delay(200);
-  int lemia=0;
-  a=digitalRead(4);//casco prendido
-  b=digitalRead(5);//switch casco
-  a2=digitalRead(3);//casco2
-  b2=digitalRead(7);//switch casco 2
-  if(!a/*and estasentado1*/){
-    repeON1=false;
-    repeblue1=false;
+
+void relay(){
+  if(alcohol.no==true){//si alcohol no hay
+    digitalWrite(relaygral,LOW);//pasamos energia a la moto
+    //futuro=cambiar 
+  }
+}
+void leerp1(){
+  uno.sentado=digitalRead(uno.pinSentado);
+  uno.On=digitalWrite(uno.pinOn);
+  uno.puesto=digitalWrite(uno.pinPuesto);
+}
+void resetflags(){
+  flag1.on=false;
+  flag1.puesto=false;
+  flag1.sentado=false;
+  flag1.todo=false;
+  flag1.countertodo=0;
+  flag1.counterpuesto=0;
+  flag1.countersentado=0;
+  flag1.counteron=0;
+}
+
+void procesosit(){
+    flag1.countersentado++;
+    flag1.countertodo=0;
+    flag1.counterpuesto=0;
+    flag1.counteron=0;
+    if (flag1.countersentado>6){
+      if(flag1.sentado==false){
+      flag1.sentado=true;
+        flag1.on=false;
+        flag1.puesto=false;
+        flag1.todo=false;}
+      lcd.cursor(0,0);
+      lcd.print("sientese bien   ");
+    }
+}
+void procesotodo(){
+  flag1.countersentado=0;
+  flag1.countertodo++;
+  flag1.counterpuesto=0;
+  flag1.counteron=0;
+  if (flag1.countertodo>6){ 
+    if (flag1.todo==false){
+      flag1.sentado=false;
+      flag1.on=false;
+      flag1.puesto=false;
+      flag1.todo=true;}
+    lcd.cursor(0,0);
+    lcd.print("haga todo bien  ");
+  } 
+}
+void procesocascopuesto(){
+  flag1.countersentado=0;
+  flag1.countertodo=0;
+  flag1.counterpuesto++;
+  flag1.counteron=0;
+  if (flag1.counterpuesto>6){
+    if(flag1.puesto){
+      flag1.sentado=false;
+      flag1.on=false;
+      flag1.puesto=true;
+      flag1.todo=false;}
     lcd.setCursor(0,0);
-    lcd.print("1 Casco=N            ");}
-  if(a){
-    if(repeON1==false){
-    repeON1=true;
-    lcd.clear();
-    lcd.setCursor(0,0);}
-    digitalWrite(relayAlco,HIGH);
-    lcd.print("1 casco=S         ");
-    if(!b and !repeblue1){
-      repeblue1=true;
-      lcd.setCursor(10,0);
-      lcd.print("Puesto");
+    lcd.print("pongase el casco");
   }
-  else if(!b and repeblue1){
-    repeblue1=false;}
+}
+void procesocascoon(){
+  flag1.countersentado=0;
+  flag1.countertodo=0;
+  flag1.counterpuesto=0;
+  flag1.counteron++;
+  if (flag1.countersentado>8){
+    if(flag1.On==false){
+      flag1.sentado=false;
+      flag1.on=true;
+      flag1.puesto=false;
+      flag1.todo=false;}
+    lcd.setCursor(0,0);
+    lcd.print("prenda el casco ");
   }
-  if(!a2/*and estasentado2*/){
-    repeON2=false;
-    repeblue2=false;
-    lcd.setCursor(0,1);
-    lcd.print("2 Casco=N            ");}
-  if(a2 ){
-    if(repeON2==false){
-    repeON2=true;
-    lcd.setCursor(0,1);}
-    lcd.print("2 casco=S");
-    if(b2 and !repeblue2){
-      repeblue2=true;
+}
+void sensordealcohol(){
+  if(flag1.no==false){
+    alcohol.flag=true;
+    digitalWrite(alcohol.relay,HIGH);
+    alcohol.counter++;
+    if (alcohol.counter<15){ 
+      lcd.setCursor(12,1);
+      lcd.print(alcohol.counter);
+      lcd.print("/15");
+    }
+    if (alcohol.counter>=15){
       lcd.setCursor(10,1);
-      lcd.print("Puesto=S");
+      lcd.print("sople   ");
+      bool a=digitalRead(globo)
+      if( a and alcohol.soplo<3){
+        aire+=digitalRead(A0);
+        return;
+      }else if (alcohol.soplo>=3){
+        if (aire<3){//si aire es menor a 3 osea, si las 3 veces que detecto alcohol eran falsas
+          alcohol.no=true;//alcohol no hay
+        //ACA ALGO CREO
+        }
+      }
+    }
+  return;
+  }else{
+    alcohol.no=false
+    alcohol.flag=false;
+    alcohol.counter=false;
   }
-  else if(!b2 and repeblue2){
-    repeblue2=false;}
+}
+
+void comprobacionp1(){
+  if(uno.On== true and uno.puesto==false and uno.sentado==false){
+    resetflags();//no se si tengo q hacer algo mas
+    return;
   }
-  
-  if(a==true and !b==true/* and (bool)sentado1*/){
-  digitalWrite(relayAlco,HIGH);
-  int timer=0;
-  for(int i=1;i<=20;i++){
-    delay(1000);
-    lcd.setCursor(0,1);
+  if(uno.sentado==true and uno.puesto==false and uno.on==true){
+    procesosit();
+    return;
+  }if(uno.On==false and uno.puesto==true and uno.sentado==true){
+    procesotodo();
+    return;
+  }if(uno.puesto==true and uno.On==true){
+    procesocascopuesto();
+    return;
+  }if (uno.On==false){
+    procesocascoon();
+    return;
   }
-  xd2=analogRead(A0);
-  lcd.clear();
-  lcd.setCursor(0,0);
-  lcd.print("sople");
-  delay(175);
-  while(timer<10){
-    bool xd=digitalRead(globo);
-    if(dale(digitalRead(4),digitalRead(5)/*sentado1,sentado2*/)){
-      timerposta=0;
-      return;}
-    while(!xd and timer<30){ 
-      xd=digitalRead(globo);
-      int aire=analogRead(A0);
-      lcd.setCursor(0,1);
-      lcd.print(aire);
-      lcd.print("  ");
-      delay(500);
-      lemia=lemia+aire;
-      timer++;
-    }}
-   lemia=lemia/10;
-  }
-  if(a and !b==true/*and sentado*/){
-  bool enpedo=true;
-  lcd.setCursor(0,0);
-  if(lemia>=xd2+2){
-    lcd.print("no puede conducir");
-    enpedo=true;
-    digitalWrite(relaygral,HIGH);
-  }
-  else{
-    lcd.print("conduzca tranquilo");
-    enpedo=false;
-    digitalWrite(relaygral,LOW);
-    for(unsigned i=1;i<3;i++){
-    delay(400);
-    lcd.scrollDisplayLeft();}
-  }
-  for(unsigned i;i<50000;i++){
-  delay(1);
-  timerposta++;
-  if(Serial.read() or dale(digitalRead(4),digitalRead(5)/*sentado1,sentado2*/),timerposta>50000){
-  timerposta=0;
-  return;}}}
+}
+void personauno(){
+  leerp1();
+  comprobacionp1();
+  sensordealcohol();
+  leerp1();
+}
+
+void loop(){
+personauno();
+//personados();
+relay();
+delay(900);
 }
