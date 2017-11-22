@@ -13,18 +13,15 @@ struct alcohol{
   int counter,relay,soplo,aire;
   bool flag,no;
 }sensor;
-
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 int globo = 8, asientoat = 10, ledverde = 6 , xd2 , relaygral = 12;
 bool a = false, b = false, a2 = false, b2 = false, alcol=false;
-
 uno.pinOn=4;
 uno.pinPuesto=5;
 uno.asiento=9;
 alcohol.relay=13
 dos.pinOn=3;
 dos.pinPuesto=7
-
 void setup() {
   Serial.begin(9600);
   Wire.begin();
@@ -44,8 +41,6 @@ void setup() {
   pinMode(uno.asiento, INPUT_PULLUP);
   pinMode(asientoat, INPUT_PULLUP);
 }
-
-
 void relay(){
   if(alcohol.no==true){//si alcohol no hay
     digitalWrite(relaygral,LOW);//pasamos energia a la moto
@@ -67,7 +62,6 @@ void resetflags(){
   flag1.countersentado=0;
   flag1.counteron=0;
 }
-
 void procesosit(){
     flag1.countersentado++;
     flag1.countertodo=0;
@@ -185,7 +179,6 @@ void personauno(){
   sensordealcohol();
   leerp1();
 }
-
 void loop(){
 personauno();
 //personados();
