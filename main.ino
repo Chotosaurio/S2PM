@@ -1,6 +1,6 @@
 #include<Wire.h>
 #include<LiquidCrystal_I2C.h>
-struct duo(){
+struct duo{
   int pinOn,pinPuesto,contador,pinSentado;
   bool On,puesto,sentado;
 }uno,dos;
