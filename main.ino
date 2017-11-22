@@ -153,8 +153,7 @@ void sensordealcohol(){
     alcohol.counter=false;
   }
 }
-
-void comprobacionp1(){
+void comprobacionp1(){//poner aca algo como void comprobacion(struct persona) y en vez de poner uno.on pongo persona.on y funca para las 2 y ahorro memoria
   if(uno.On== true and uno.puesto==false and uno.sentado==false){
     resetflags();//no se si tengo q hacer algo mas
     return;
@@ -174,11 +173,11 @@ void comprobacionp1(){
   }
 }
 void personauno(){
-  leerp1();
-  comprobacionp1();
+  leerp1();//puedo usar todos estos para el persona2 
+  comprobacionp1();//puedo usar todos estos para el persona2 
   sensordealcohol();
-  leerp1();
-}
+  leerp1();//puedo usar todos estos para el persona2 
+}//solo necesito pasarles el struct que van a usar y listo, el tema es q todavia no se si funcionan
 void loop(){
 personauno();
 //personados();
