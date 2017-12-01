@@ -6,18 +6,19 @@ struct duo{
   bool On, puesto, sentado;
 } p1, p2;
 struct  bandera{
-  int counteron=10, countersentado=10, counterpuesto=10, countertodo=10;
+  int counteron=0, countersentado=0, counterpuesto=0, countertodo=0;
   bool On, Ya, sentado, puesto, todo;
 }flaguno,flagdos;
 struct sensor{
-  int counter=10, relay, soplo, aire;
+  int counter=0, relay, soplo, aire;
   bool flag, no;
 }alcol;
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 int globo = 8, asientoat = 10, ledverde = 6 , xd2 , relaygral = 11;
-bool a = false, b = false, a2 = false, b2 = false, yaseprobo=false,HDP=false;
+bool a = false, b = false, a2 = false, b2 = false, yaseprobo=false,HDP;
 
 void setup() {
+  HDP=false;
   p1.pinOn = 4;
   p1.pinPuesto = 5;
   p1.pinSentado = 9;
@@ -60,60 +61,64 @@ void leerp1(duo &uno){
 }
 void resetflags(bandera &flag1){
   HDP=false;
-  flaguno.On=false;
-  flaguno.puesto=false;
-  flaguno.sentado=false;
-  flaguno.todo=false;
-  flaguno.countertodo=0;
-  flaguno.counterpuesto=0;
-  flaguno.countersentado=0;
-  flaguno.counteron=0;
+  flag1.On=false;
+  flag1.puesto=false;
+  flag1.sentado=false;
+  flag1.todo=false;
+  flag1.countertodo=0;
+  flag1.counterpuesto=0;
+  flag1.countersentado=0;
+  flag1.counteron=0;
   lcd.setCursor(0,0);
+  lcd.print("                   ");
+  lcd.setCursor(0,1);
   lcd.print("                   ");
 }
 
 void procesosit(bandera &flag1){
-    flaguno.countersentado++;
-    flaguno.countertodo=0;
-    flaguno.counterpuesto=0;
-    flaguno.counteron=0;
-    if (flaguno.countersentado>2){
-      if(flaguno.sentado==false){
-        flaguno.sentado=true;
-        flaguno.On=false;
-        flaguno.Ya=false;
-        flaguno.puesto=false;
-        flaguno.todo=false;
+    flag1.countersentado++;
+    flag1.countertodo=0;
+    flag1.counterpuesto=0;
+    flag1.counteron=0;
+    if (flag1.countersentado>2){
+      if(flag1.sentado==false){
+        flag1.sentado=true;
+        flag1.On=false;
+        flag1.Ya=false;
+        flag1.puesto=false;
+        flag1.todo=false;
         }
       lcd.setCursor(0,0);
       lcd.print("sientese        ");
-    }if (flaguno.countersentado>6){
+    if (flag1.countersentado>=6){
      HDP=true;
     lcd.setCursor(0,1);
     digitalWrite(relaygral,HIGH);
-    lcd.print("puto                 "); 
+    lcd.print("!!                 "); 
+    }
     }
 }
 void procesotodo(bandera &flag1){
-  flaguno.countersentado=0;
-  flaguno.countertodo++;
-  flaguno.counterpuesto=0;
-  flaguno.counteron=0;
-  if (flaguno.countertodo>3){ 
-    if (flaguno.todo==false){
-      flaguno.sentado=false;
-      flaguno.On=false;
-      flaguno.puesto=false;
-      flaguno.Ya=false;
-      flaguno.todo=true;
+  flag1.countersentado=0;
+  flag1.countertodo++;
+  flag1.counterpuesto=0;
+  flag1.counteron=0;
+  if (flag1.countertodo>3){ 
+    if (flag1.todo==false){
+      flag1.sentado=false;
+      flag1.On=false;
+      flag1.puesto=false;
+      flag1.Ya=false;
+      flag1.todo=true;
       }
     lcd.setCursor(0,0);
     lcd.print("haga todo bien  ");
-  } if(flaguno.countertodo>8 ){
+   if(flag1.countertodo>8 ){
     HDP=true;
     lcd.setCursor(0,1);
     digitalWrite(relaygral,HIGH);
-    lcd.print("puto                 ");
+    lcd.print("!!                 ");
+  }
   } 
 }
 void procesocascopuesto(bandera &flag1){
@@ -131,33 +136,35 @@ void procesocascopuesto(bandera &flag1){
       }
     lcd.setCursor(0,0);
     lcd.print("pongase el casco");
-  }if(flag1.counterpuesto>8 ){
-    lcd.setCursor(0,1);
-    HDP=true;
-    digitalWrite(relaygral,HIGH);
-    lcd.print("puto                ");
+    if(flag1.counterpuesto>8 ){
+      lcd.setCursor(0,1);
+      HDP=true;
+      digitalWrite(relaygral,HIGH);
+      lcd.print("!!                ");
+    }
   }
 }
 void procesocascoon(bandera &flag1){
-  flaguno.countersentado=0;
-  flaguno.countertodo=0;
-  flaguno.counterpuesto=0;
-  flaguno.counteron++;
-  if (flaguno.counteron>5){
-    if(flaguno.On==false){
-      flaguno.sentado=false;
-      flaguno.Ya=false;
-      flaguno.On=true;
-      flaguno.puesto=false;
-      flaguno.todo=false;
+  flag1.countersentado=0;
+  flag1.countertodo=0;
+  flag1.counterpuesto=0;
+  flag1.counteron++;
+  if (flag1.counteron>5){
+    if(flag1.On==false){
+      flag1.sentado=false;
+      flag1.Ya=false;
+      flag1.On=true;
+      flag1.puesto=false;
+      flag1.todo=false;
       }
       lcd.setCursor(0,0);
       lcd.print("prenda el casco ");
-  } if(flaguno.counteron>8){
+       if(flag1.counteron>8){
     lcd.setCursor(0,1);
     HDP=true;
     digitalWrite(relaygral,HIGH);
-    lcd.print("puto                 ");
+    lcd.print("!!                 ");
+  }
   }
 }
 void sensordealcohol(bandera &flag1, sensor &alcohol){
@@ -204,7 +211,7 @@ void sensordealcohol(bandera &flag1, sensor &alcohol){
 }
 }
 void comprobacionp1(duo &uno , bandera &flag1){//poner aca algo como void comprobacion(struct persona) y en vez de poner uno.on pongo persona.on y funca para las 2 y ahorro memoria
-   if(((uno.On==true and uno.puesto==false)or(uno.On==false and uno.puesto==true)) and uno.sentado==0){
+   if(uno.On==false and uno.puesto==true and uno.sentado==0){
     procesotodo(flag1);
     return;
   }if(uno.On== true and uno.puesto==false and uno.sentado==true){
@@ -245,5 +252,5 @@ personauno();
 //personados();
 relay(alcol);
 debug(alcol);
-delay(900);
+delay(950);
 }//se repite
