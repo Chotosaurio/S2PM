@@ -15,7 +15,7 @@ struct sensor{
 }alcol;
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 int globo = 8, asientoat = 10, ledverde = 6 , xd2 , relaygral = 11;
-bool a = false, b = false, a2 = false, b2 = false, yaseprobo=false;
+bool a = false, b = false, a2 = false, b2 = false, yaseprobo=false,HDP=false;
 
 void setup() {
   p1.pinOn = 4;
@@ -36,20 +36,20 @@ void setup() {
   pinMode(p1.pinOn, INPUT_PULLUP);
   pinMode(p1.pinPuesto, INPUT_PULLUP);
   pinMode(globo, INPUT_PULLUP);
-  pinMode(A0, INPUT_PULLUP);
+  pinMode(A0, INPUT);
   pinMode(alcol.relay, OUTPUT);
   digitalWrite(alcol.relay, LOW);
   pinMode(relaygral, OUTPUT);
+  digitalWrite(relaygral, HIGH);
   pinMode(p1.pinSentado, INPUT);
   pinMode(p2.pinSentado, INPUT_PULLUP);
-  delay(100);
   lcd.clear();
 }
 void relay(sensor &alcohol){
-  if(alcohol.no==true and yaseprobo){//si alcohol no hay
+  if(alcohol.no==true and yaseprobo and HDP==false){//si alcohol no hay
     digitalWrite(relaygral,LOW);//pasamos energia a la moto
     lcd.setCursor(0,1);
-    lcd.print("conduzca tranqui");
+    lcd.print("Conduzca tranqui");
     //futuro=cambiar 
   }
 }
@@ -59,6 +59,7 @@ void leerp1(duo &uno){
   uno.puesto=digitalRead(uno.pinPuesto);
 }
 void resetflags(bandera &flag1){
+  HDP=false;
   flaguno.On=false;
   flaguno.puesto=false;
   flaguno.sentado=false;
@@ -76,7 +77,7 @@ void procesosit(bandera &flag1){
     flaguno.countertodo=0;
     flaguno.counterpuesto=0;
     flaguno.counteron=0;
-    if (flaguno.countersentado>3){
+    if (flaguno.countersentado>2){
       if(flaguno.sentado==false){
         flaguno.sentado=true;
         flaguno.On=false;
@@ -85,7 +86,12 @@ void procesosit(bandera &flag1){
         flaguno.todo=false;
         }
       lcd.setCursor(0,0);
-      lcd.print("sientese bien   ");
+      lcd.print("sientese        ");
+    }if (flaguno.countersentado>6){
+     HDP=true;
+    lcd.setCursor(0,1);
+    digitalWrite(relaygral,HIGH);
+    lcd.print("puto                 "); 
     }
 }
 void procesotodo(bandera &flag1){
@@ -103,29 +109,33 @@ void procesotodo(bandera &flag1){
       }
     lcd.setCursor(0,0);
     lcd.print("haga todo bien  ");
-  }else if(flaguno.countertodo>12){
+  } if(flaguno.countertodo>8 ){
+    HDP=true;
     lcd.setCursor(0,1);
-    lcd.print("puto");
+    digitalWrite(relaygral,HIGH);
+    lcd.print("puto                 ");
   } 
 }
 void procesocascopuesto(bandera &flag1){
-  flaguno.countersentado=0;
-  flaguno.countertodo=0;
-  flaguno.counterpuesto++;
-  flaguno.counteron=0;
-  if (flaguno.counterpuesto>3){
-    if(flaguno.puesto==false){
-      flaguno.sentado=false;
-      flaguno.On=false;
-      flaguno.Ya=false;
-      flaguno.puesto=true;
-      flaguno.todo=false;
+  flag1.countersentado=0;
+  flag1.countertodo=0;
+  flag1.counterpuesto++;
+  flag1.counteron=0;
+  if (flag1.counterpuesto>3){
+    if(flag1.puesto==false){
+      flag1.sentado=false;
+      flag1.On=false;
+      flag1.Ya=false;
+      flag1.puesto=true;
+      flag1.todo=false;
       }
     lcd.setCursor(0,0);
     lcd.print("pongase el casco");
-  }else if(flaguno.counterpuesto>12){
+  }if(flag1.counterpuesto>8 ){
     lcd.setCursor(0,1);
-    lcd.print("puto");
+    HDP=true;
+    digitalWrite(relaygral,HIGH);
+    lcd.print("puto                ");
   }
 }
 void procesocascoon(bandera &flag1){
@@ -143,9 +153,11 @@ void procesocascoon(bandera &flag1){
       }
       lcd.setCursor(0,0);
       lcd.print("prenda el casco ");
-  }else if(flaguno.counteron>12){
+  } if(flaguno.counteron>8){
     lcd.setCursor(0,1);
-    lcd.print("puto");
+    HDP=true;
+    digitalWrite(relaygral,HIGH);
+    lcd.print("puto                 ");
   }
 }
 void sensordealcohol(bandera &flag1, sensor &alcohol){
@@ -154,17 +166,18 @@ void sensordealcohol(bandera &flag1, sensor &alcohol){
     alcohol.flag=true;
     digitalWrite(alcohol.relay,HIGH);
     alcohol.counter++;
-    if (alcohol.counter<15){ 
+    if (alcohol.counter<10){ 
       lcd.setCursor(7,1);
       lcd.print(alcohol.counter);
-      lcd.print("/15      ");
+      lcd.print("/10      ");
     }
     if (alcohol.counter>=15){
       lcd.setCursor(5,1);
       lcd.print("     sople   ");
       bool a=digitalRead(globo);
-      Serial.print(a);
-      alcohol.soplo+=abs(a-1);
+      lcd.setCursor(0,1);
+      lcd.print(a);
+      alcohol.soplo+=a;
       if( a and alcohol.soplo<3){
         alcohol.aire+=digitalRead(A0);
         return;
@@ -191,13 +204,10 @@ void sensordealcohol(bandera &flag1, sensor &alcohol){
 }
 }
 void comprobacionp1(duo &uno , bandera &flag1){//poner aca algo como void comprobacion(struct persona) y en vez de poner uno.on pongo persona.on y funca para las 2 y ahorro memoria
-   if(uno.On==false and uno.puesto==true and uno.sentado==true){
+   if(((uno.On==true and uno.puesto==false)or(uno.On==false and uno.puesto==true)) and uno.sentado==0){
     procesotodo(flag1);
     return;
-  }if(uno.sentado==true and uno.puesto==false and uno.On==true){
-    procesosit(flag1);
-    return;
-  }if(uno.On== true and uno.puesto==false and uno.sentado==false){
+  }if(uno.On== true and uno.puesto==false and uno.sentado==true){
     resetflags(flag1);//no se si tengo q hacer algo mas
     flag1.Ya=true;
     return;
@@ -205,7 +215,10 @@ void comprobacionp1(duo &uno , bandera &flag1){//poner aca algo como void compro
   if(uno.puesto==true and uno.On==true){
     procesocascopuesto(flag1);
     return;
-  }if (uno.On==false){
+  }if(uno.sentado==0 ){
+    procesosit(flag1);
+    return;
+  }  if (uno.On==false){
     procesocascoon(flag1);
     return;
   }
@@ -221,15 +234,16 @@ void personauno(){
 //comprobacionp1(dos)
 }
 
-void debug(){
+void debug(sensor &alcohol){
   Serial.print(p1.On);
   Serial.print(p1.puesto);
-  Serial.println(p1.sentado);
+  Serial.print(p1.sentado);
+  Serial.println(alcohol.aire);
 }
 void loop(){
 personauno();
 //personados();
 relay(alcol);
-debug();
-delay(950);
+debug(alcol);
+delay(900);
 }//se repite
