@@ -6,3 +6,5 @@ Todo esto fue diseñado por un grupo de alumnos, uno de esos, yo.
 24/10/2017==>La idea principal de este proyecto era presentarlo en la oniet pero como vimos que ganamos en otra competencia todo paga preferimos ir a San Luis
 
 22/11/2017==> El 1 y 2 de diciembre presentamos en robotec que es un evento de robotica que se organiza en una universidad tecnologica y queremos hacer que funcione lo mejor posible para esa fecha, tambien tenemos pensado implementar muchas cosas mas pero esta en proceso
+
+13/02/2017==> me olvide de actualizar la situacion en su momento, el sistema esta funcionando en una moto 10/10 tenemos problemas en la pantalla, muestra mucha basura(caracteres aleatorios en toda la pantalla), dentro de poco tenemos planeado seguir con el proyecto
