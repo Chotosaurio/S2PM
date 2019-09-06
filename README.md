@@ -10,3 +10,5 @@ Todo esto fue diseñado por un grupo de alumnos, uno de esos, yo.
 13/02/2018==> me olvide de actualizar la situacion en su momento, el sistema esta funcionando en una moto 10/10 tenemos problemas en la pantalla, muestra mucha basura(caracteres aleatorios en toda la pantalla), dentro de poco tenemos planeado seguir con el proyecto
 
 Hace un montón me fui del proyecto porque no me gustaba el ambiente en el que trabajaba, el proyecto se quedo estancado por unos meses y ahora supuestamente avanzaron. El codigo lo eliminé porque no aceptaban la idea de ser codigo abierto y facilitar medianamente el desarrollo, siendo que yo era el unico que programaba tenia un monton de problemas que ahora que sé un poco mas de programacion y como ordenar bien las cosas (no se fijen en mis proyectos igualmente) podria hacer mucho mejor pero ellos pedian un programa con todo resuelto para un dia despues, sinceramente yo no podia
+
+6/9/2019 ==> me di cuenta que parece medio inutil tener este repo aca, pero queria dejarlo porque es tipo un diario del proyecto, y un poco mio, ademas es la prueba de q yo hice esto xd
